@@ -1,4 +1,4 @@
-package br.mg.customertracker.model;
+package br.mg.customertracker.map;
 
 import java.util.Date;
 import java.util.List;

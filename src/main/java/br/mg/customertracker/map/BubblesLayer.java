@@ -1,4 +1,4 @@
-package br.mg.customertracker.model;
+package br.mg.customertracker.map;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

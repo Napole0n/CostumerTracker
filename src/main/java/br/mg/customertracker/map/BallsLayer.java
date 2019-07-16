@@ -1,4 +1,4 @@
-package br.mg.customertracker.model;
+package br.mg.customertracker.map;
 
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.Paint;

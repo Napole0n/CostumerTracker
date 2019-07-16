@@ -34,9 +34,9 @@ import org.mapsforge.map.model.Model;
 import org.mapsforge.map.model.common.PreferencesFacade;
 
 import br.mg.customertracker.exception.InvalidSizeException;
-import br.mg.customertracker.model.BallsLayer;
-import br.mg.customertracker.model.BubblesLayer;
-import br.mg.customertracker.model.TestDataGenerator;
+import br.mg.customertracker.map.BallsLayer;
+import br.mg.customertracker.map.BubblesLayer;
+import br.mg.customertracker.map.TestDataGenerator;
 
 public class Map {
 
