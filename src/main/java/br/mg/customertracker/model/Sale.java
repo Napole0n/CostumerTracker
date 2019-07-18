@@ -1,5 +1,5 @@
 package br.mg.customertracker.model;
 
-public class Cliente {
+public class Sale {
 
 }
