@@ -1,21 +1,52 @@
 package br.mg.customertracker.model;
 
-public class Item {
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+
+@SuppressWarnings("serial")
+@Entity(name = "items")
+public class Item implements Serializable {
+
+	@Id
 	private int Id;
 	private String description;
-	private ItemGroup group;
 
-	public enum ItemGroup {
+	@OneToMany(targetEntity = ItemGroup.class, fetch = FetchType.EAGER)
+	@OrderColumn
+	private ItemGroup[] groups;
 
-		CARNE_BOVINA(1000), CARNE_SUINA(2000), INDUSTRIALIZADOS(3000);
+	public Item() {
+	}
 
-		public final int group_code;
+	public Item(int id, String description, ItemGroup... groups) {
+		this.Id = id;
+		this.description = description;
+		this.groups = groups;
+	}
 
-		private ItemGroup(int group_code) {
-			this.group_code = group_code;
-		}
+	public int getId() {
+		return Id;
+	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public ItemGroup[] getGroups() {
+		return groups;
+	}
+
+	@Override
+	public String toString() {
+		return "Item [Id=" + Id + ", description=" + description + ", groups=" + Arrays.toString(groups) + "]";
 	}
 
 }

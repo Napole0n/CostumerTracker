@@ -9,10 +9,15 @@
 		<property name="connection.url">jdbc:sqlite:database.db</property>
 		<property name="hibernate.dialect">com.enigmabridge.hibernate.dialect.SQLiteDialect</property>
 		<property name="show_sql">false</property>
-		<property name="hbm2ddl.auto">create</property>
+
 
 		<mapping class="br.mg.customertracker.model.Adress" />
 		<mapping class="br.mg.customertracker.model.Customer" />
+		<mapping class="br.mg.customertracker.model.Company" />
+		<mapping class="br.mg.customertracker.model.Item" />
+		<mapping class="br.mg.customertracker.model.ItemGroup" />
+		<mapping class="br.mg.customertracker.model.Sale" />
+		<mapping class="br.mg.customertracker.model.SaleItem" />
 
 
 	</session-factory>

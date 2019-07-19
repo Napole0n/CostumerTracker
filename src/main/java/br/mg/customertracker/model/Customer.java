@@ -1,20 +1,25 @@
 package br.mg.customertracker.model;
 
-import javax.persistence.CascadeType;
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 
+@SuppressWarnings("serial")
 @Entity(name = "customers")
-public class Customer {
+public class Customer implements Serializable{
 	
 	@Id
 	private long cnpj;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER)
 	private Adress adress;
 	private String name;
 	
+	public Customer() {}
 	public Customer(long cnpj, Adress adress, String name) {
 		super();
 		this.cnpj = cnpj;

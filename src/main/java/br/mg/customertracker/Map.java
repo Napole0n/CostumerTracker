@@ -1,5 +1,6 @@
 package br.mg.customertracker;
 
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
@@ -29,25 +31,35 @@ import org.mapsforge.map.layer.debug.TileGridLayer;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.Model;
 import org.mapsforge.map.model.common.PreferencesFacade;
 
+import com.core.controller.Kimera;
+
+import br.mg.customertracker.database.CustomerBundle;
+import br.mg.customertracker.database.SqliteDatabase;
 import br.mg.customertracker.exception.InvalidSizeException;
 import br.mg.customertracker.map.BallsLayer;
 import br.mg.customertracker.map.BubblesLayer;
 import br.mg.customertracker.map.TestDataGenerator;
+import br.mg.customertracker.model.Adress;
+import br.mg.customertracker.model.Customer;
 
 public class Map {
 
+	private static CustomerBundle customers;
 	private static final GraphicFactory GRAPH_FACTORY = AwtGraphicFactory.INSTANCE;
 	private static final int TILE_SIZE = 256;
 	private static final int MAP_WIDTH = 1024;
 	private static final int MAP_HEIGHT = 768;
-	private static BubblesLayer bubbleLayer;
+
 
 	public static void main(String[] args) throws InvalidSizeException {
 
+		Kimera k = SqliteDatabase.getKimera();
+		customers = new CustomerBundle(k.all(Customer.class));
 		// define renderização multi-thread
 		Parameters.NUMBER_OF_THREADS = 8;
 		Parameters.SQUARE_FRAME_BUFFER = false;
@@ -59,7 +71,7 @@ public class Map {
 	}
 
 	private static void setupWindow(MapView view, BoundingBox bb) {
-		final PreferencesFacade preferencesFacade = new JavaPreferences(Preferences.userNodeForPackage(Map.class));
+		PreferencesFacade preferencesFacade = new JavaPreferences(Preferences.userNodeForPackage(Map.class));
 		JFrame frame = new JFrame();
 		frame.setTitle("Mapa");
 		frame.add(view);
@@ -94,10 +106,6 @@ public class Map {
 	private static BoundingBox configure(MapView view) throws InvalidSizeException {
 
 		Layers layers = view.getLayerManager().getLayers();
-		
-		 bubbleLayer = new BubblesLayer(TestDataGenerator.generate(), TILE_SIZE);
-
-
 
 		TileCache tileCache = AwtUtil.createTileCache(TILE_SIZE, view.getModel().frameBufferModel.getOverdrawFactor(),
 				MAP_WIDTH, new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
@@ -116,8 +124,20 @@ public class Map {
 		view.setZoomLevelMax(tileSource.getZoomLevelMax());
 		bb = new BoundingBox(LatLongUtils.LATITUDE_MIN, LatLongUtils.LONGITUDE_MIN, LatLongUtils.LATITUDE_MAX,
 				LatLongUtils.LONGITUDE_MAX);
-		
-		layers.add(bubbleLayer);
+
+		int paintInt = AwtGraphicFactory.INSTANCE.createColor(250, 250, 0, 0);
+		Bitmap markerBitmap = AwtGraphicFactory.INSTANCE.createBitmap(5, 5);
+		markerBitmap.setBackgroundColor(paintInt);
+		for (long l : customers.getAllKeys()) {
+			Adress a = customers.get(l).getAdress();
+			if (a.getLatitude() != 0.0) {
+				Marker m = new Marker(new LatLong(a.getLatitude(), a.getLongitude()), markerBitmap, 0, 0);
+				layers.add(m);
+			}
+		}
+
+		SqliteDatabase.close();
+
 		return bb;
 	}
 
@@ -135,12 +155,9 @@ public class Map {
 		return new TileDownloadLayer(tileCache, mapViewPosition, tileSource, GRAPH_FACTORY) {
 			@Override
 			public boolean onTap(LatLong tapLatLong, Point layerXY, Point tapXY) {
-				bubbleLayer.dateForward();
 				return true;
 			}
-		    
-			
-			
+
 		};
 	}
 
